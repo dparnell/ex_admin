@@ -29,7 +29,7 @@ end
 
 defimpl ExAdmin.Render, for: Map do
   def to_string(map) do
-    Poison.encode!(map)
+    Application.get_env(:phoenix, :json_library).encode!(map)
   end
 end
 
@@ -41,10 +41,10 @@ defimpl ExAdmin.Render, for: List do
       if String.printable?(str) do
         str
       else
-        Poison.encode!(list)
+        Application.get_env(:phoenix, :json_library).encode!(list)
       end
     else
-      Poison.encode!(list)
+      Application.get_env(:phoenix, :json_library).encode!(list)
     end
   end
 end

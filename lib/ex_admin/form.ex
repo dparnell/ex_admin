@@ -532,7 +532,7 @@ defmodule ExAdmin.Form do
   def put_script_block(script_block) do
     if script_block do
       Xain.script type: "text/javascript" do
-        text("\n" <> script_block <> "\n")
+        raw("\n" <> script_block <> "\n")
       end
     end
   end
@@ -779,7 +779,7 @@ defmodule ExAdmin.Form do
           theme_module(conn, Form).has_many_insert_item(contents, new_record_name_var)
         )
 
-      markup do
+      markup safe: true do
         html
 
         theme_module(conn, Form).theme_button(
@@ -839,7 +839,7 @@ defmodule ExAdmin.Form do
         fn ext_name ->
           item = update_in(item[:opts], &(Map.delete(&1, :change) |> Map.delete(:ajax)))
 
-          markup do
+          markup safe: true do
             if binary_tuple do
               build_select_binary_tuple_list(
                 collection,
@@ -1019,7 +1019,7 @@ defmodule ExAdmin.Form do
 
               res_id = ExAdmin.Schema.get_id(res)
 
-              markup do
+              markup safe: true do
                 html
 
                 Xain.input(
@@ -1090,7 +1090,7 @@ defmodule ExAdmin.Form do
     required = get_required(name, opts)
 
     theme_module(conn, Form).build_inputs_collection(model_name, name, name_ids, required, fn ->
-      markup do
+      markup safe: true do
         Xain.input(name: name_str, type: "hidden", value: "")
 
         if opts[:as] == :check_boxes do
@@ -1200,31 +1200,6 @@ defmodule ExAdmin.Form do
     end)
   end
 
-  defp build_checkboxes(conn, name, collection, _opts, resource, model_name, errors, name_ids) do
-    theme_module(conn, Form).wrap_collection_check_boxes fn ->
-      for opt <- collection do
-        opt_id = Schema.get_id(opt)
-        name_str = "#{model_name}[#{name_ids}][#{opt_id}]"
-        selected = cond do
-          errors != nil ->
-            # error and selected in params
-            request_params = Map.get(conn, :body_params, nil)
-            ids = Map.get(request_params, model_name, %{}) |>
-                  Map.get(name_ids, []) |>
-                  ExAdmin.EctoFormMappers.checkboxes_to_ids
-            Integer.to_string(opt_id) in ids
-          true ->
-            assoc_ids = Enum.map(get_resource_field2(resource, name), &(Schema.get_id(&1)))
-            # select and no error
-            opt_id in assoc_ids
-        end
-        display_name = display_name opt
-        theme_module(conn, Form).collection_check_box display_name, name_str,
-          opt_id, selected
-      end
-    end
-  end
-
   defp get_schema(item, field_name) do
     schema = item[:opts][:schema]
     unless schema, do: raise("Can't render map without schema #{inspect(field_name)}")
@@ -1246,7 +1221,7 @@ defmodule ExAdmin.Form do
     label = humanize(field)
 
     theme_module(conn, Form).build_map(id, label, index, error, fn class ->
-      markup do
+      markup safe: true do
         []
         |> Keyword.put(:type, input_type(type))
         |> Keyword.put(:class, class)
@@ -1281,7 +1256,7 @@ defmodule ExAdmin.Form do
       |> Map.put_new(:id, ext_name)
       |> Map.to_list()
 
-    markup do
+    markup safe: true do
       Xain.input(type: :hidden, value: "false", name: "#{model_name}[#{field_name}]")
       Xain.input(opts)
     end
@@ -1474,7 +1449,7 @@ defmodule ExAdmin.Form do
     builder =
       Keyword.get(opts, :builder) ||
         fn b ->
-          markup do
+          markup safe: true do
             date_builder(b, opts)
             span(".date-time-separator")
             time_builder(b, opts)
@@ -1491,7 +1466,7 @@ defmodule ExAdmin.Form do
   end
 
   defp date_builder(b, _opts) do
-    markup do
+    markup safe: true do
       b.(:year, [])
       span(".date-separator")
       b.(:month, [])
@@ -1519,20 +1494,20 @@ defmodule ExAdmin.Form do
   end
 
   defp time_builder(b, opts) do
-    markup do
+    markup safe: true do
       b.(:hour, [])
       span(".time-separator")
       b.(:min, [])
 
       if Keyword.get(opts, :sec) do
-        markup do
+        markup safe: true do
           span(".time-separator")
           b.(:sec, [])
         end
       end
 
       if Keyword.get(opts, :usec) do
-        markup do
+        markup safe: true do
           span(".time-separator")
           b.(:usec, [])
         end

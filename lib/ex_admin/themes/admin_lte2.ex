@@ -36,7 +36,7 @@ defmodule ExAdmin.Theme.AdminLte2 do
   def wrap_item_type(_type, label, ext_name, contents, error, required) do
     error = get_form_error_class(error)
 
-    markup do
+    markup safe: true do
       label ".col-sm-2.control-label", for: ext_name do
         text(humanize(label))
         required_abbr(required)
