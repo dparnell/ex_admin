@@ -174,24 +174,25 @@ defmodule ExAdmin.Theme.AdminLte2.Form do
   def form_box(item, _opts, fun) do
     {html, changes} =
       Enum.reduce(fun.(), {"", []}, fn item, {htmls, chgs} ->
-        # case item do
-        #   bin when is_binary(bin) ->
-        #     {htmls <> Phoenix.HTML.safe_to_string(Phoenix.HTML.html_escape(bin)), chgs}
-
-        #   {:safe, _} = escaped ->
-        #     {htmls <> Phoenix.HTML.safe_to_string(escaped), chgs}
-
-        #   {bin, change} ->
-        #     {htmls <> Phoenix.HTML.safe_to_string(Phoenix.HTML.html_escape(bin)), [change | chgs]}
-        # end
         case item do
           bin when is_binary(bin) ->
-            {htmls <> bin, chgs}
-          {:safe, change} ->
-            {htmls, [change | chgs]}
+            {htmls <> Phoenix.HTML.safe_to_string(Phoenix.HTML.html_escape(bin)), chgs}
+
+          {:safe, _} = escaped ->
+            {htmls <> Phoenix.HTML.safe_to_string(escaped), chgs}
+
           {bin, change} ->
-            {htmls <> bin, [change | chgs]}
+            {htmls <> Phoenix.HTML.safe_to_string(Phoenix.HTML.html_escape(bin)), [change | chgs]}
         end
+
+        #case item do
+        #  bin when is_binary(bin) ->
+        #    {htmls <> bin, chgs}
+        #  {:safe, change} ->
+        #    {htmls, [change | chgs]}
+        #  {bin, change} ->
+        #    {htmls <> bin, [change | chgs]}
+        #end
       end)
 
     changes = Enum.reverse(changes)
@@ -205,7 +206,7 @@ defmodule ExAdmin.Theme.AdminLte2.Form do
         end
 
         div ".box-body" do
-          html
+          raw(html)
         end
       end
 
