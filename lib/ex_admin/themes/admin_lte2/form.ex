@@ -184,15 +184,6 @@ defmodule ExAdmin.Theme.AdminLte2.Form do
           {bin, change} ->
             {htmls <> Phoenix.HTML.safe_to_string(Phoenix.HTML.html_escape(bin)), [change | chgs]}
         end
-
-        #case item do
-        #  bin when is_binary(bin) ->
-        #    {htmls <> bin, chgs}
-        #  {:safe, change} ->
-        #    {htmls, [change | chgs]}
-        #  {bin, change} ->
-        #    {htmls <> bin, [change | chgs]}
-        #end
       end)
 
     changes = Enum.reverse(changes)
